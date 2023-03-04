@@ -26,16 +26,20 @@ public class StudentRepository {
     public void addStudentTeacherPair(String student, String teacher) {
         studentTeacher.put(student,teacher);
 
-        if(std.containsKey(student) && tch.containsKey(teacher)){
+
             List<String> students = new ArrayList<>();
 
             if(teacherAndstudents.containsKey(teacher)){
                 students=teacherAndstudents.get(teacher);
+                students.add(student);
+                teacherAndstudents.put(teacher,students);
+            }
+            else{
+                students.add(student);
+                teacherAndstudents.put(teacher,students);
             }
 
-            students.add(student);
-            teacherAndstudents.put(teacher,students);
-        }
+
     }
 
     public Student getStudentByName(String name) {
@@ -60,10 +64,10 @@ public class StudentRepository {
 
     public void deleteTeacherByName(String teacher) {
         tch.remove(teacher);
-        List<String> students = new ArrayList<>();
-        students=teacherAndstudents.get(teacher);
+        List<String> students = teacherAndstudents.get(teacher);
 
         for(String student : students){
+            std.remove(student);
             studentTeacher.remove(student);
         }
         teacherAndstudents.remove(teacher);
@@ -72,6 +76,11 @@ public class StudentRepository {
     public void deleteAllTeachers() {
         for (String student : studentTeacher.keySet()) {
             std.remove(student);
+        }
+        for (List<String> students : teacherAndstudents.values()) {
+            for (String student: students) {
+                std.remove(student);
+            }
         }
         tch.clear();
         studentTeacher.clear();
